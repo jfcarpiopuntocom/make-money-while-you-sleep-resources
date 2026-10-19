@@ -38,3 +38,7 @@ Download a copy from the repository's Code menu. Keep the license notice with re
 Node.js 20 or later; PELE 1.6.0 for rebuilding diagrams; Python 3.10 or later, Pillow, FFmpeg with libx264 and ffprobe for local video. n8n and an AI model are separate installations, not bundled products. Check their terms, availability and costs before using them.
 
 The only JavaScript production dependency is PELE, licensed MIT by its maintainers. Rebuilding diagrams is optional; the exported SVGs can be read without installing it.
+
+### Package your professional experience
+
+Use [From experience to offers](EXPERIENCE-TO-OFFERS.md) to identify a problem you have solved, extract a framework, choose a useful first product and consider optional coaching or a distinct next offer. The worksheet is for employed and independent professionals; its examples are illustrative.
