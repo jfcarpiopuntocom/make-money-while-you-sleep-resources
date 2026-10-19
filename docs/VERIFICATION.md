@@ -9,15 +9,17 @@ Prepared 18 October 2026, Ecuador. This record states what was observed, not a g
 - Exported n8n Code snippets parsed and their demo path ran through a mock execution interface.
 - Validation rejected private-source flags, unsafe job IDs, malformed AI output, missing approval, changed asset hashes, wrong destinations and expired approvals.
 - The illustrative unit-economics case returned 12.50 contribution and 20 sales to recover 250 of setup costs. A negative contribution did not return a fictitious break-even count.
-- The local renderer produced a 720 � 1280, 9-second silent MP4, cards, script, draft SRT and manifest from the supplied synthetic example. Media probing checked dimensions and duration.
+- The local renderer produced a 720 × 1280, 9-second silent MP4, cards, script, draft SRT and manifest from the supplied synthetic example. Media probing checked dimensions and duration.
 
-## Still to verify before public release
+## Adaptation and checks in the reader's environment
+
+JFC's intended delivery is a set of starting designs and instructions that each reader's AI can adapt to their own case. ADAPT-WITH-YOUR-AI.md provides the handoff prompt. The local checks above concern the supplied example; they do not certify a reader's adapted installation. START-HERE.pdf presents the example without code, and the companion workbook can be used manually.
 
 - Actual import and execution in n8n. The available read-only connector returned an availability error; no production n8n configuration was changed.
 - Local Ollama generation with a configured model. No model download or generation was performed during this preparation.
 - Narrated output and word-aligned captions. The current sample is silent and its SRT is scene-timed.
 - External provider integrations, paid generation, buyer checkout, automated storefront delivery and social publication. None were executed.
-- Author review of the resource license, book text, public README and final artwork.
+- Author review of the resource license, book text, public README and final artwork remains required before publication.
 
 ## Reproduction
 

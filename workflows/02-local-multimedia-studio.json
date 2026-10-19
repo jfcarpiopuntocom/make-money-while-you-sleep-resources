@@ -36,7 +36,7 @@
         200
       ],
       "parameters": {
-        "jsCode": "function prepareRender(input) {\n  if (input.approved !== true) throw new Error('Approve the exact script and scenes before rendering.');\n  if (typeof input.script_sha256 !== 'string' || !/^[a-f0-9]{64}$/i.test(input.script_sha256)) throw new Error('Add the SHA-256 of the exact approved script.');\n  if (!Array.isArray(input.scenes) || input.scenes.length < 1 || input.scenes.length > 6) throw new Error('Expected 1�6 approved scenes');\n  return {...input, status: 'APPROVED_FOR_LOCAL_RENDER'};\n}\nreturn $input.all().map(i => ({json:prepareRender(i.json)}));"
+        "jsCode": "function prepareRender(input) {\n  if (input.approved !== true) throw new Error('Approve the exact script and scenes before rendering.');\n  if (typeof input.script_sha256 !== 'string' || !/^[a-f0-9]{64}$/i.test(input.script_sha256)) throw new Error('Add the SHA-256 of the exact approved script.');\n  if (!Array.isArray(input.scenes) || input.scenes.length < 1 || input.scenes.length > 6) throw new Error('Expected 1–6 approved scenes');\n  return {...input, status: 'APPROVED_FOR_LOCAL_RENDER'};\n}\nreturn $input.all().map(i => ({json:prepareRender(i.json)}));"
       }
     },
     {

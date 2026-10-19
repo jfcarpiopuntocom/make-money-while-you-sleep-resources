@@ -23,7 +23,7 @@ def validate(job):
         raise ValueError('Approved script hash does not match script_text')
     scenes = job.get('scenes')
     if not isinstance(scenes, list) or not 1 <= len(scenes) <= 6:
-        raise ValueError('Expected 1�6 scenes')
+        raise ValueError('Expected 1–6 scenes')
     for s in scenes:
         if not isinstance(s, dict): raise ValueError('Invalid scene')
         for key, limit in [('title', 60), ('body', 180)]:
@@ -31,7 +31,7 @@ def validate(job):
                 raise ValueError('Scene text exceeds the readable card limits')
     seconds = job.get('seconds_per_scene', 4)
     if type(seconds) not in (int, float) or not 2 <= seconds <= 10:
-        raise ValueError('Use 2�10 seconds per scene')
+        raise ValueError('Use 2–10 seconds per scene')
     if not isinstance(job.get('title', ''), str) or len(job.get('title', '')) > 70:
         raise ValueError('Invalid title')
     audio = None

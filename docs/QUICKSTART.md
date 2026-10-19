@@ -2,8 +2,8 @@
 
 ## Route A with the tools you already use
 
-1. Read examples/brief.json. It defines a meal-planning kit, the audience, the problem and a short owned source.
-2. Read examples/review-package.json. Compare the article, script, scenes and caption with that source. Nothing in the example is a verified sales result.
+1. Open examples/START-HERE.pdf. It presents the meal-planning product brief, source, demonstration and calculation without code.
+2. Open examples/meal-planning-workbook.pdf. Fill the blank pages and compare them with the completed examples. The article, script, scenes and caption are in START-HERE.pdf; their structured source files remain in examples/brief.json and examples/review-package.json. Nothing in the example is a verified sales result.
 3. Open the SVG diagrams in diagrams/. Copy templates/product-brief.md and replace the example with a problem you understand.
 4. Make a complete product and demonstration in your normal tools. Use templates/review-checklist.md before sharing them.
 5. Use examples/unit-economics.csv to examine costs. Replace the assumptions; do not treat them as a platform quotation.
@@ -11,6 +11,8 @@
 This route does not require n8n, a local model, Python or any paid API.
 
 ## Route B with n8n
+
+Begin with [Adapt this kit with your AI](../ADAPT-WITH-YOUR-AI.md). Ask your assistant to inspect and adapt the relevant templates to your product and existing installation. The instructions below explain the supplied design; your adapted version needs its own execution check. A ready-made design is not a guarantee of an identical setup on every computer.
 
 Use an existing n8n installation you control. Do not buy a hosted plan just to run this demo. Import workflows/01-product-studio.json using n8n's import-from-file menu. Imported files are inactive and have no schedule or public webhook.
 

@@ -2,15 +2,17 @@
 
 ## Reader resources for Using AI and Automations
 
-Create a useful digital product, prepare a coherent multimedia demonstration, and inspect the work before publishing it. These resources accompany Juan Fernando Carpio's book. They are tools for doing the work, not evidence of income or a promise that a product will sell.
+Create a useful digital product, prepare a coherent multimedia demonstration, and inspect the work before publishing it. These resources accompany J. F. Carpio's book. They are tools for doing the work, not evidence of income or a promise that a product will sell.
 
 This is a private preparation copy. Public release and the license for reuse are pending the author's review. The book manuscript and unpublished business notes are not included here.
 
 ### Start here
 
-Read [the quickstart](docs/QUICKSTART.md). For a route without automation software, open the completed [brief](examples/brief.json) and [review package](examples/review-package.json). Follow the structure using your own writing and design tools.
+Open [Start here](examples/START-HERE.pdf) and the [fillable workbook](examples/meal-planning-workbook.pdf). The PDF shows the product brief, demonstration and calculation in ordinary reading form; you do not need to read code to begin.
 
-For the automation route, import the inactive n8n files in workflows/. Start with 01-product-studio in demo mode. It makes no provider calls. Read the source and draft side by side before connecting an AI model.
+Watch the [supplied silent demonstration](examples/demo-video.mp4) to see the three example scenes. It is a teaching sample, not an advertisement that produced verified sales.
+
+For the technical route, use [Adapt this kit with your AI](ADAPT-WITH-YOUR-AI.md). It includes a copyable prompt to help your assistant adapt these starting designs to your product, existing tools and installation. The n8n files are templates, not a claim of compatibility with every setup. [The quickstart](docs/QUICKSTART.md) describes their intended operation and local boundaries.
 
 ### What is included
 
