@@ -4,7 +4,7 @@
 
 Create a useful digital product, prepare a coherent multimedia demonstration, and inspect the work before publishing it. These resources accompany J. F. Carpio's book. They are tools for doing the work, not evidence of income or a promise that a product will sell.
 
-This is a private preparation copy. Public release and the license for reuse are pending the author's review. The book manuscript and unpublished business notes are not included here.
+These reader resources are available under the [MIT License](LICENSE), including commercial use and adaptation with the required copyright and license notices. This license covers the files in this repository; the book manuscript and cover are not included or licensed here. Third-party tools retain their own licenses.
 
 ### Start here
 
@@ -31,7 +31,7 @@ No service accounts, customer data, API keys, account IDs or brand-private Notio
 
 ### Keep your own copy
 
-Download the repository and a release archive when the public edition is available. Keep your product sources and output files separately backed up. The essential process is also described in the book. No online host can honestly be promised to remain available forever.
+Download a copy from the repository's Code menu. Keep the license notice with redistributed copies. Keep your product sources and output files separately backed up. The essential process is also described in the book. No online host can honestly be promised to remain available forever.
 
 ### Requirements for the optional technical route
 
