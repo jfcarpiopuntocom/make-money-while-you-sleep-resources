@@ -1,0 +1,22 @@
+{
+  "job_id": "meal-plan-demo-video",
+  "title": "Weekly Meal Planning Kit",
+  "approved": true,
+  "script_text": "Start with meals you already know. Check the ingredients you have. Choose meals for the week, write one shopping list, and leave a flexible evening. The worksheet helps you make those decisions before you shop.",
+  "script_sha256": "258e3ee124c8f58864dbe9f0762565a5ac11e4dfa2dc424d3aa5802c2da5076b",
+  "scenes": [
+    {
+      "title": "Check what you have",
+      "body": "Look in the fridge and pantry before adding items to your list."
+    },
+    {
+      "title": "Choose familiar meals",
+      "body": "Use your household rotation and leave one flexible evening."
+    },
+    {
+      "title": "Write one shopping list",
+      "body": "List the missing ingredients and check quantities before shopping."
+    }
+  ],
+  "seconds_per_scene": 3
+}

@@ -1,0 +1,9 @@
+assumption,illustrative_value
+price,20
+fee_percent,10
+fee_fixed,0.50
+variable_cost,1
+acquisition_cost,4
+setup_cost,250
+contribution_before_tax,12.50
+break_even_sales,20

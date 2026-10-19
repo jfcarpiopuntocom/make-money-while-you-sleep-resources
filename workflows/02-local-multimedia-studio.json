@@ -1,0 +1,128 @@
+{
+  "name": "02-local-multimedia-studio",
+  "active": false,
+  "nodes": [
+    {
+      "id": "Start-manually",
+      "name": "Start manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        200
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "Approved-render-input",
+      "name": "Approved render input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        200
+      ],
+      "parameters": {
+        "jsCode": "throw new Error(\"Paste your reviewed package here; set approved:true and the exact script_sha256. See docs/QUICKSTART.md.\");"
+      }
+    },
+    {
+      "id": "Validate-render-approval",
+      "name": "Validate render approval",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        200
+      ],
+      "parameters": {
+        "jsCode": "function prepareRender(input) {\n  if (input.approved !== true) throw new Error('Approve the exact script and scenes before rendering.');\n  if (typeof input.script_sha256 !== 'string' || !/^[a-f0-9]{64}$/i.test(input.script_sha256)) throw new Error('Add the SHA-256 of the exact approved script.');\n  if (!Array.isArray(input.scenes) || input.scenes.length < 1 || input.scenes.length > 6) throw new Error('Expected 1�6 approved scenes');\n  return {...input, status: 'APPROVED_FOR_LOCAL_RENDER'};\n}\nreturn $input.all().map(i => ({json:prepareRender(i.json)}));"
+      }
+    },
+    {
+      "id": "Local-media-studio",
+      "name": "Local media studio",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        650,
+        200
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:8765/render",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "timeout": 120000
+        }
+      }
+    },
+    {
+      "id": "Inspect-local-result",
+      "name": "Inspect local result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        200
+      ],
+      "parameters": {
+        "jsCode": "const r=$input.first().json; if(r.status!==\"READY_FOR_REVIEW\" || !r.video_sha256 || !r.output_dir) throw new Error(\"Render not complete: inspect local logs and do not publish.\"); return [{json:{...r,approved:false,next_action:\"Open the local video and manifest, then review.\"}}];"
+      }
+    }
+  ],
+  "connections": {
+    "Start manually": {
+      "main": [
+        [
+          {
+            "node": "Approved render input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved render input": {
+      "main": [
+        [
+          {
+            "node": "Validate render approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate render approval": {
+      "main": [
+        [
+          {
+            "node": "Local media studio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Local media studio": {
+      "main": [
+        [
+          {
+            "node": "Inspect local result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

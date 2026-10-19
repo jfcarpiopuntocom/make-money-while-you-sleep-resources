@@ -1,0 +1,71 @@
+{
+  "name": "04-unit-economics",
+  "active": false,
+  "nodes": [
+    {
+      "id": "Start-manually",
+      "name": "Start manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        200
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "Edit-assumptions",
+      "name": "Edit assumptions",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        200
+      ],
+      "parameters": {
+        "jsCode": "return [{json:{price:20,fee_percent:10,fee_fixed:0.5,variable_cost:1,acquisition_cost:4,setup_cost:250}}];"
+      }
+    },
+    {
+      "id": "Contribution-and-break-even",
+      "name": "Contribution and break even",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        450,
+        200
+      ],
+      "parameters": {
+        "jsCode": "function unitEconomics(input) {\n  const {price, fee_percent, fee_fixed, variable_cost, acquisition_cost, setup_cost} = input;\n  for (const value of [price, fee_percent, fee_fixed, variable_cost, acquisition_cost, setup_cost]) if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) throw new Error('Use non-negative finite numbers');\n  if (price <= 0 || fee_percent >= 100) throw new Error('Invalid price or fee');\n  const contribution = price * (1 - fee_percent / 100) - fee_fixed - variable_cost - acquisition_cost;\n  return {contribution, break_even_sales: contribution > 0 ? Math.ceil(setup_cost / contribution) : null, note: 'Illustrative contribution before taxes and omitted costs, not earnings.'};\n}\nreturn $input.all().map(i => ({json:unitEconomics(i.json)}));"
+      }
+    }
+  ],
+  "connections": {
+    "Start manually": {
+      "main": [
+        [
+          {
+            "node": "Edit assumptions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit assumptions": {
+      "main": [
+        [
+          {
+            "node": "Contribution and break even",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

@@ -1,0 +1,10 @@
+{
+  "job_id": "meal-plan-demo",
+  "mode": "demo",
+  "source_public": true,
+  "product": "Weekly Meal Planning Kit",
+  "audience": "busy households planning meals",
+  "problem": "deciding what to cook before shopping",
+  "model": "qwen2.5:7b",
+  "source_text": "The kit contains a weekly meal worksheet, a pantry check, a shopping list and a flexible evening. Start with meals the household already knows. Check ingredients already available. Plan meals, list missing ingredients and quantities, and leave one evening flexible. No nutrition or savings claim is made."
+}

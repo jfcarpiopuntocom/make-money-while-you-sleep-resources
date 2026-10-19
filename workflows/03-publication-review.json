@@ -1,0 +1,71 @@
+{
+  "name": "03-publication-review",
+  "active": false,
+  "nodes": [
+    {
+      "id": "Start-manually",
+      "name": "Start manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        200
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "Exact-approval-input",
+      "name": "Exact approval input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        200,
+        200
+      ],
+      "parameters": {
+        "jsCode": "return [{json:{manifest:{video_sha256:\"\",destination:\"\"},approval:{approved:false,asset_sha256:\"\",destination:\"\",expires_at:\"\"}}}];"
+      }
+    },
+    {
+      "id": "Check-exact-asset-and-destination",
+      "name": "Check exact asset and destination",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        450,
+        200
+      ],
+      "parameters": {
+        "jsCode": "function checkRelease(input, now = Date.now()) {\n  const {manifest, approval} = input;\n  if (!manifest || !approval || approval.approved !== true) throw new Error('Explicit approval required');\n  if (!/^[a-f0-9]{64}$/i.test(manifest.video_sha256 ?? '')) throw new Error('Invalid asset hash');\n  if (approval.asset_sha256 !== manifest.video_sha256) throw new Error('The asset changed after approval');\n  if (!manifest.destination || approval.destination !== manifest.destination) throw new Error('Destination mismatch');\n  const expires = Date.parse(approval.expires_at);\n  if (!Number.isFinite(expires) || expires <= now) throw new Error('Approval expired');\n  return {...input, status: 'READY_FOR_MANUAL_PUBLICATION', publishes_automatically: false};\n}\nreturn $input.all().map(i => ({json:checkRelease(i.json)}));"
+      }
+    }
+  ],
+  "connections": {
+    "Start manually": {
+      "main": [
+        [
+          {
+            "node": "Exact approval input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exact approval input": {
+      "main": [
+        [
+          {
+            "node": "Check exact asset and destination",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

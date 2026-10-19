@@ -1,0 +1,8 @@
+node_modules/
+outputs/
+.env
+*.log
+__pycache__/
+*.pyc
+.pnpm-store/
+*.bak

@@ -1,0 +1,11 @@
+flowchart TD
+A[Create unique job ID] --> B[Check saved manifest]
+B --> C{Same job and content}
+C -->|Yes| D[Return existing result]
+C -->|No| E[Reject conflicting reuse]
+B --> F[New job]
+F --> G[Render into temporary folder]
+G --> H{All outputs verified}
+H -->|No| I[Keep failure log and stop]
+H -->|Yes| J[Save hashes and final manifest]
+J --> D
