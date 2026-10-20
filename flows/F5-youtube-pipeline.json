@@ -1,0 +1,289 @@
+{
+  "name": "F5 YouTube Pipeline",
+  "nodes": [
+    {
+      "id": "8303257f-b498-5b18-921b-4e7f5518006e",
+      "name": "Read me first",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        -340
+      ],
+      "parameters": {
+        "content": "F5 YouTube Pipeline\n\nWhat it does: idea in, private video out. An AI writes a script, a voice is made, the video is rendered, then the flow WAITS for your approval and only then uploads it as PRIVATE. You publish it yourself in YouTube.\n\nConnect: your AI, voice and render services (placeholders; use only a voice you own or have consent for, with a license that allows commercial use) and your YouTube account in n8n credentials. Daily upload limits apply (see Appendix C).",
+        "height": 320,
+        "width": 680
+      }
+    },
+    {
+      "id": "164a56c4-20b3-5951-acad-9d556bbfc552",
+      "name": "Video idea",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "path": "youtube-pipeline",
+        "httpMethod": "POST",
+        "responseMode": "onReceived"
+      },
+      "webhookId": "ebd67c83-29c0-54df-b325-3f80fbfff1c9"
+    },
+    {
+      "id": "d37f0890-2c99-5dd5-872e-afb93a0e636e",
+      "name": "AI writes the script",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "{{YOUR_AI_API_URL}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ prompt: 'Write a 60-second plain-English video script about: ' + $json.body.idea }) }}",
+        "options": {}
+      }
+    },
+    {
+      "id": "e5c773aa-4dc9-54db-8439-4754db5e5d24",
+      "name": "Make the voice",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "{{YOUR_VOICE_SERVICE_URL}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ text: $json.script || $json.text }) }}",
+        "options": {}
+      }
+    },
+    {
+      "id": "a0745043-4580-5f5b-8c31-3485a5cac1d5",
+      "name": "Render the video",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "{{YOUR_RENDER_SERVICE_URL}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {}
+      }
+    },
+    {
+      "id": "75148fc1-dbe2-5705-abb3-358f88dd1cec",
+      "name": "Ask the human to approve",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        960,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "{{YOUR_EMAIL}}",
+        "subject": "Watch and approve this video",
+        "emailType": "text",
+        "message": "=The video is ready: {{ $('Render the video').item.json.videoUrl || 'see your render folder' }}\n\nApprove: {{ $execution.resumeUrl }}?decision=yes\nReject: {{ $execution.resumeUrl }}?decision=no",
+        "options": {}
+      }
+    },
+    {
+      "id": "e6ed3bbe-8518-5b32-80d5-da0c1ba1d4f9",
+      "name": "Wait for the human",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1200,
+        0
+      ],
+      "parameters": {
+        "resume": "webhook",
+        "httpMethod": "GET",
+        "options": {}
+      },
+      "webhookId": "3d4b2d9f-bc6a-5a3c-ad31-c24cb3f4565e"
+    },
+    {
+      "id": "f5259dc9-9c41-5786-aa7d-7d7926abcd81",
+      "name": "Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "7a8965b6-a7fc-5750-a067-cfe0c2024201",
+              "leftValue": "={{ $json.query.decision }}",
+              "rightValue": "yes",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "95c89fc0-bcc6-5f44-a969-57f22f3c7a07",
+      "name": "Upload to YouTube as PRIVATE",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1680,
+        -80
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/upload/youtube/v3/videos?part=snippet,status",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"snippet\":{\"title\":\"{{YOUR_VIDEO_TITLE}}\"},\"status\":{\"privacyStatus\":\"private\"}}",
+        "options": {}
+      }
+    },
+    {
+      "id": "a16221a6-ebd2-503d-b9be-a7e9fec89204",
+      "name": "Rejected: not uploaded",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1680,
+        100
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "82745d86-7b1f-5972-bd4a-987baf322303",
+              "name": "result",
+              "value": "rejected",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Video idea": {
+      "main": [
+        [
+          {
+            "node": "AI writes the script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI writes the script": {
+      "main": [
+        [
+          {
+            "node": "Make the voice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make the voice": {
+      "main": [
+        [
+          {
+            "node": "Render the video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Render the video": {
+      "main": [
+        [
+          {
+            "node": "Ask the human to approve",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask the human to approve": {
+      "main": [
+        [
+          {
+            "node": "Wait for the human",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for the human": {
+      "main": [
+        [
+          {
+            "node": "Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved?": {
+      "main": [
+        [
+          {
+            "node": "Upload to YouTube as PRIVATE",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rejected: not uploaded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "tags": []
+}

@@ -1,44 +1,59 @@
-# Make Money While You Sleep
+# Make Money While You Sleep: Start Here
 
-## Reader resources for Using AI and Automations
+Free companion kit for the book *Make Money While You Sleep: Using AI and Automations* by J. F. Carpio.
 
-Create a useful digital product, prepare a coherent multimedia demonstration, and inspect the work before publishing it. These resources accompany J. F. Carpio's book. They are tools for doing the work, not evidence of income or a promise that a product will sell.
+You do not need to be technical. If you can use email and a web browser, you can use this kit. Everything here is ready to copy, open or import. Where a step needs your own account or your approval, the kit says so in plain words.
 
-These reader resources are available under the [MIT License](LICENSE), including commercial use and adaptation with the required copyright and license notices. This license covers the files in this repository; the book manuscript and cover are not included or licensed here. Third-party tools retain their own licenses.
+> The book and its cover are not included. This kit is the free toolbox that goes with it.
 
-### Start here
+## Step one: set up your studio (about 30 minutes)
 
-Open [Start here](examples/START-HERE.pdf) and the [fillable workbook](examples/meal-planning-workbook.pdf). The PDF shows the product brief, demonstration and calculation in ordinary reading form; you do not need to read code to begin.
+1. Open the `studio/` folder.
+2. Double-click `1-Install-Claude.bat`.
+3. Double-click `2-Start-My-Studio.bat`.
 
-Watch the [supplied silent demonstration](examples/demo-video.mp4) to see the three example scenes. It is a teaching sample, not an advertisement that produced verified sales.
+That opens Claude Code, the assistant that works inside a folder on your computer. If you get stuck, Chapter 4 of the book and `studio/CLAUDE-CODE-FOR-DUMMIES.md` walk you through it. Want a little company while it works? See `bonus/PETS.md`.
 
-For the technical route, use [Adapt this kit with your AI](ADAPT-WITH-YOUR-AI.md). It includes a copyable prompt to help your assistant adapt these starting designs to your product, existing tools and installation. The n8n files are templates, not a claim of compatibility with every setup. [The quickstart](docs/QUICKSTART.md) describes their intended operation and local boundaries.
+Then copy `claude/CLAUDE.md` into your studio folder. It is the "employee handbook" your assistant reads every time it starts.
 
-### What is included
+## What is inside
 
-- Product Studio: source brief to an article, spoken script, visual scenes, caption and editorial questions. The included demo is synthetic; local AI mode uses a separately configured Ollama installation.
-- Local Multimedia Studio: approved text to portrait cards and an MP4, with optional owned narration. It saves a script, scene-timed draft subtitles and hashes in a manifest.
-- Publication Review: checks a specific asset, destination and expiring approval. It deliberately contains no social publishing node.
-- Unit Economics: calculates contribution and break-even from explicit assumptions. It does not estimate demand or revenue.
-- PELE diagrams: editable Mermaid sources and exported SVG files for the business loop, studio, recovery path and economics.
-- Practical templates: product brief, evidence ledger, offer outline, rights register and review checklist.
+- `studio/`: the ready-to-double-click launchers for your studio.
+- `claude/`: `CLAUDE.md` (the handbook for your assistant) and `SAFETY.md` (the safety rules).
+- `prompts/`: the Master Prompts. Paste one into Claude and it interviews you, one question at a time.
+- `flows/`: eight ready-made automations (F1 to F8) for n8n, a free visual tool that runs steps for you. See `flows/README.md`.
+- `emails/`: welcome, a 7-email sales sequence, delivery, testimonial request, next offer.
+- `templates/`: worksheet, booklet template, sales page, product outline, launch checklist, KDP launch sheet, cover brief.
+- `video/`: script template, scene list, voice options, edit checklist.
+- `ai-engine-room/`: optional free helpers that handle boring public chores so your paid plan lasts longer.
+- `bonus/`: extras, including the pets.
+- `examples/`, `docs/`, `workflows/`, `EXPERIENCE-TO-OFFERS.md`, `ADAPT-WITH-YOUR-AI.md`: the first release of the kit (START-HERE.pdf, a fillable workbook, a demo, more templates). Still here, still useful.
 
-### What has been checked
+## The three Master Prompts
 
-See [VERIFICATION.md](docs/VERIFICATION.md). Executing the JavaScript logic locally does not prove import or execution inside n8n. A local silent video does not prove narration quality, AI-provider integration, checkout, delivery or a published social post.
+1. **The Experience Interview.** Finds what you know that people would pay to learn.
+2. **The Product Builder.** Turns it into a product outline, a booklet outline, a sales page, emails, and a cover brief for ChatGPT.
+3. **The Machine Builder.** Builds your personal AI setup and tells you which automations to use first.
 
-No service accounts, customer data, API keys, account IDs or brand-private Notion content are included. Provider connections and purchases are not activated by importing these workflows.
+There is also a fourth, the Weekly Coach: a 15-minute check-in. Each one is printed in full in the book and saved as a file in `prompts/`.
 
-### Keep your own copy
+## Safety rules (the short version)
 
-Download a copy from the repository's Code menu. Keep the license notice with redistributed copies. Keep your product sources and output files separately backed up. The essential process is also described in the book. No online host can honestly be promised to remain available forever.
+1. Ask first. Your assistant proposes, you approve.
+2. Never type passwords, card numbers or API keys into a chat.
+3. A human (you) approves anything public or paid.
+4. Never send client or private data to free tools.
+5. Keep your files tidy and backed up.
 
-### Requirements for the optional technical route
+The full version is in `claude/SAFETY.md`.
 
-Node.js 20 or later; PELE 1.6.0 for rebuilding diagrams; Python 3.10 or later, Pillow, FFmpeg with libx264 and ffprobe for local video. n8n and an AI model are separate installations, not bundled products. Check their terms, availability and costs before using them.
+## Honest notes
 
-The only JavaScript production dependency is PELE, licensed MIT by its maintainers. Rebuilding diagrams is optional; the exported SVGs can be read without installing it.
+- The flows are designed for you to adapt with your AI. They are written to import into n8n, but your setup is yours: test each one with your own email first. Nothing is sent until you switch a flow on.
+- This kit does not promise sales or income. It saves you setup time.
+- Prices and plans change. Check each tool's own page before you pay (the book's Appendix C lists what was checked in October 2026).
+- Examples use skilled trades and restaurants. The characters in the book are fictional.
 
-### Package your professional experience
+## License
 
-Use [From experience to offers](EXPERIENCE-TO-OFFERS.md) to identify a problem you have solved, extract a framework, choose a useful first product and consider optional coaching or a distinct next offer. The worksheet is for employed and independent professionals; its examples are illustrative.
+MIT License. Copyright (c) 2026 J. F. Carpio. See `LICENSE`. Third-party tools keep their own licenses. The book and cover are not included.

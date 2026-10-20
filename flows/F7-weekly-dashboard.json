@@ -1,0 +1,171 @@
+{
+  "name": "F7 Weekly Dashboard",
+  "nodes": [
+    {
+      "id": "1ba48587-9667-59c7-a389-3a344b8d26ac",
+      "name": "Read me first",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        -300
+      ],
+      "parameters": {
+        "content": "F7 Weekly Dashboard\n\nWhat it does: every Monday at 7 it reads your sales and subscribers sheets, adds them up and emails you one short digest.\n\nConnect: Google Sheets (a sales tab with columns date and price; a subscribers tab) and Gmail. Replace the sheet IDs and tab names. The first digest will be mostly zeros; that is fine. These are your numbers only, for your own decisions.",
+        "height": 300,
+        "width": 620
+      }
+    },
+    {
+      "id": "d7172b01-e8cf-5df0-b3a5-9b36502cfdda",
+      "name": "Every Monday at 7",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 7 * * 1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "5f950562-b05d-595a-bd1e-dfc1e24837a6",
+      "name": "Read sales",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        240,
+        -80
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "{{YOUR_GOOGLE_SHEET_ID}}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "{{YOUR_SHEET_TAB_NAME}}"
+        }
+      }
+    },
+    {
+      "id": "4c62f07a-832e-5530-97f7-d04fd85b3438",
+      "name": "Read subscribers",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        480,
+        -80
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "{{YOUR_GOOGLE_SHEET_ID}}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "{{YOUR_SHEET_TAB_NAME}}"
+        }
+      }
+    },
+    {
+      "id": "c86ad4dd-4cf0-5d0b-b3e4-8e6eb407584b",
+      "name": "Add it up",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        -80
+      ],
+      "parameters": {
+        "jsCode": "const sales = $('Read sales').all().map(i => i.json);\nconst subs = $('Read subscribers').all().length;\nconst weekAgo = Date.now() - 7*24*3600*1000;\nconst recent = sales.filter(s => new Date(s.date || s.buyDate).getTime() >= weekAgo);\nconst revenue = recent.reduce((t, s) => t + (parseFloat(s.price) || 0), 0);\nreturn [{ json: { salesCount: recent.length, revenue: revenue.toFixed(2), subscribers: subs } }];"
+      }
+    },
+    {
+      "id": "6beca290-ad3c-5311-ad66-30007e089c9d",
+      "name": "Email me the digest",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        960,
+        -80
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "{{YOUR_EMAIL}}",
+        "subject": "Your Monday numbers",
+        "emailType": "text",
+        "message": "=Last 7 days:\nSales: {{ $json.salesCount }}\nRevenue: {{ $json.revenue }}\nTotal subscribers: {{ $json.subscribers }}\n\nOne small step for this week: pick the one number you want to move.",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Every Monday at 7": {
+      "main": [
+        [
+          {
+            "node": "Read sales",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read sales": {
+      "main": [
+        [
+          {
+            "node": "Read subscribers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read subscribers": {
+      "main": [
+        [
+          {
+            "node": "Add it up",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add it up": {
+      "main": [
+        [
+          {
+            "node": "Email me the digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "tags": []
+}

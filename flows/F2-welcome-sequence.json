@@ -1,0 +1,409 @@
+{
+  "name": "F2 Welcome Sequence",
+  "nodes": [
+    {
+      "id": "35778640-e8ad-53b6-a540-37172914cee1",
+      "name": "Read me first",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        -300
+      ],
+      "parameters": {
+        "content": "F2 Welcome Sequence\n\n7 emails over 14 days (day 0, 1, 3, 5, 8, 11, 14). Each one does one of the six sales. Write the email text in the emails/ folder, then paste it into each Gmail step.\n\nConnect: your Gmail account. Start it from F1 or from your email tool by calling this webhook with the new contact's email and firstName. Test with your own address and shorten the waits while testing, then change them back before going live.",
+        "height": 320,
+        "width": 620
+      }
+    },
+    {
+      "id": "854b7d28-a3b9-5e14-8f6c-249ddf3c5aab",
+      "name": "New subscriber",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "path": "welcome-sequence",
+        "httpMethod": "POST",
+        "responseMode": "onReceived"
+      },
+      "webhookId": "32b69b9b-0d28-5345-8ddf-2c0bc3f37acc"
+    },
+    {
+      "id": "84bbd613-c994-57d5-988e-3f589606481e",
+      "name": "Email 1",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $('New subscriber').item.json.body.email }}",
+        "subject": "Welcome: here is your booklet and one quick win",
+        "emailType": "text",
+        "message": "=Hi {{ $('New subscriber').item.json.body.firstName || 'friend' }},\n\n[Paste email 1 from emails/six-sales-sequence.md here]\n\nYOUR_NAME\n{{YOUR_BUSINESS_NAME}}",
+        "options": {}
+      }
+    },
+    {
+      "id": "200d6b3a-efab-5838-9e92-342e245505fa",
+      "name": "Wait 1 day after email 1",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 1,
+        "unit": "days"
+      }
+    },
+    {
+      "id": "d6f02da3-2509-5c26-8597-6ebec62964fd",
+      "name": "Email 2",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $('New subscriber').item.json.body.email }}",
+        "subject": "The first small victory",
+        "emailType": "text",
+        "message": "=Hi {{ $('New subscriber').item.json.body.firstName || 'friend' }},\n\n[Paste email 2 from emails/six-sales-sequence.md here]\n\nYOUR_NAME\n{{YOUR_BUSINESS_NAME}}",
+        "options": {}
+      }
+    },
+    {
+      "id": "edce432c-38ae-5242-9ba9-1b6f0ed9b1e8",
+      "name": "Wait 2 days after email 2",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        0
+      ],
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 2,
+        "unit": "days"
+      }
+    },
+    {
+      "id": "f8c24d98-e7e0-5d69-bb27-e46536aa3055",
+      "name": "Email 3",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $('New subscriber').item.json.body.email }}",
+        "subject": "A story that changed how I see this",
+        "emailType": "text",
+        "message": "=Hi {{ $('New subscriber').item.json.body.firstName || 'friend' }},\n\n[Paste email 3 from emails/six-sales-sequence.md here]\n\nYOUR_NAME\n{{YOUR_BUSINESS_NAME}}",
+        "options": {}
+      }
+    },
+    {
+      "id": "4669a248-1972-5fb2-a7c1-5459144c202c",
+      "name": "Wait 2 days after email 3",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1440,
+        0
+      ],
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 2,
+        "unit": "days"
+      }
+    },
+    {
+      "id": "f5d07c34-a76b-5d26-85ed-0e780dd919ca",
+      "name": "Email 4",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1680,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $('New subscriber').item.json.body.email }}",
+        "subject": "The next step, in plain words",
+        "emailType": "text",
+        "message": "=Hi {{ $('New subscriber').item.json.body.firstName || 'friend' }},\n\n[Paste email 4 from emails/six-sales-sequence.md here]\n\nYOUR_NAME\n{{YOUR_BUSINESS_NAME}}",
+        "options": {}
+      }
+    },
+    {
+      "id": "95f0eb9b-c512-5949-8a1a-c499f0397c6f",
+      "name": "Wait 3 days after email 4",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1920,
+        0
+      ],
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 3,
+        "unit": "days"
+      }
+    },
+    {
+      "id": "a1675b51-26eb-51b1-92ed-62bc5c3ff11a",
+      "name": "Email 5",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2160,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $('New subscriber').item.json.body.email }}",
+        "subject": "How to make it part of your week",
+        "emailType": "text",
+        "message": "=Hi {{ $('New subscriber').item.json.body.firstName || 'friend' }},\n\n[Paste email 5 from emails/six-sales-sequence.md here]\n\nYOUR_NAME\n{{YOUR_BUSINESS_NAME}}",
+        "options": {}
+      }
+    },
+    {
+      "id": "e70a9e50-d662-568b-b551-32f5b3a05829",
+      "name": "Wait 3 days after email 5",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2400,
+        0
+      ],
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 3,
+        "unit": "days"
+      }
+    },
+    {
+      "id": "e9e6ad64-db48-554b-ae7c-6784ee366788",
+      "name": "Email 6",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2640,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $('New subscriber').item.json.body.email }}",
+        "subject": "Questions I get asked most",
+        "emailType": "text",
+        "message": "=Hi {{ $('New subscriber').item.json.body.firstName || 'friend' }},\n\n[Paste email 6 from emails/six-sales-sequence.md here]\n\nYOUR_NAME\n{{YOUR_BUSINESS_NAME}}",
+        "options": {}
+      }
+    },
+    {
+      "id": "7a366b6a-ef61-5e9a-91b3-16fae8439326",
+      "name": "Wait 3 days after email 6",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2880,
+        0
+      ],
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 3,
+        "unit": "days"
+      }
+    },
+    {
+      "id": "2c07751e-af2a-5627-94f9-2b8f1a32fbfd",
+      "name": "Email 7",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        3120,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $('New subscriber').item.json.body.email }}",
+        "subject": "Your next step: the full product",
+        "emailType": "text",
+        "message": "=Hi {{ $('New subscriber').item.json.body.firstName || 'friend' }},\n\n[Paste email 7 from emails/six-sales-sequence.md here]\n\nYOUR_NAME\n{{YOUR_BUSINESS_NAME}}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "New subscriber": {
+      "main": [
+        [
+          {
+            "node": "Email 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email 1": {
+      "main": [
+        [
+          {
+            "node": "Wait 1 day after email 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1 day after email 1": {
+      "main": [
+        [
+          {
+            "node": "Email 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email 2": {
+      "main": [
+        [
+          {
+            "node": "Wait 2 days after email 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2 days after email 2": {
+      "main": [
+        [
+          {
+            "node": "Email 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email 3": {
+      "main": [
+        [
+          {
+            "node": "Wait 2 days after email 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 2 days after email 3": {
+      "main": [
+        [
+          {
+            "node": "Email 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email 4": {
+      "main": [
+        [
+          {
+            "node": "Wait 3 days after email 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 3 days after email 4": {
+      "main": [
+        [
+          {
+            "node": "Email 5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email 5": {
+      "main": [
+        [
+          {
+            "node": "Wait 3 days after email 5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 3 days after email 5": {
+      "main": [
+        [
+          {
+            "node": "Email 6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email 6": {
+      "main": [
+        [
+          {
+            "node": "Wait 3 days after email 6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 3 days after email 6": {
+      "main": [
+        [
+          {
+            "node": "Email 7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "tags": []
+}

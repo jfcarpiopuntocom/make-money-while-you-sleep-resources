@@ -1,0 +1,207 @@
+{
+  "name": "F8 Approval Gate",
+  "nodes": [
+    {
+      "id": "6f8fa804-3964-53bd-941f-e83073654e88",
+      "name": "Read me first",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        -300
+      ],
+      "parameters": {
+        "content": "F8 Approval Gate\n\nThe pattern: nothing public or paid happens until a human clicks Approve. Copy these three steps (ask, wait, approved?) into any other flow right before the step that publishes, sends to a list or spends money.\n\nConnect: Gmail. Put your own address in {{YOUR_EMAIL}}. The email has two links; the workflow stays paused until you click one. Test: call the webhook with a title and preview, click Approve, then run it again and click Reject.",
+        "height": 300,
+        "width": 620
+      }
+    },
+    {
+      "id": "29ccc5aa-415a-5bc2-8108-1b1ac4befa4b",
+      "name": "Something needs approval",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "path": "approval-gate",
+        "httpMethod": "POST",
+        "responseMode": "onReceived"
+      },
+      "webhookId": "a117a2c2-4c76-5bf1-8d73-0d9eb4a5cf4d"
+    },
+    {
+      "id": "59e2006b-f2ab-5a88-b40d-54a4ae746c71",
+      "name": "Ask the human to approve",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "{{YOUR_EMAIL}}",
+        "subject": "=Please approve: {{ $json.body.title }}",
+        "emailType": "text",
+        "message": "=Something is waiting for you:\n\n{{ $json.body.title }}\n\n{{ $json.body.preview }}\n\nApprove: {{ $execution.resumeUrl }}?decision=yes\nReject: {{ $execution.resumeUrl }}?decision=no",
+        "options": {}
+      }
+    },
+    {
+      "id": "fb14cda6-3288-5da8-b903-5417fe7d851d",
+      "name": "Wait for the human",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "resume": "webhook",
+        "httpMethod": "GET",
+        "options": {}
+      },
+      "webhookId": "d9299611-c48a-5fca-bbae-02fadf441d94"
+    },
+    {
+      "id": "1b95c97b-f74c-55c8-8ba7-d0850c12673c",
+      "name": "Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "6ba8f089-6669-59c1-b26b-f15758d27f69",
+              "leftValue": "={{ $json.query.decision }}",
+              "rightValue": "yes",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "de74a018-15f6-56d1-a3c3-8587865c62ee",
+      "name": "Approved: continue here",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        960,
+        -80
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1d304fd3-704d-5d8c-8730-d19d2fd8c2eb",
+              "name": "result",
+              "value": "approved",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "a8e262b6-3c77-55a2-b860-dc3762057fe0",
+      "name": "Rejected: stop here",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        960,
+        100
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ce2b9041-b9e1-53e1-99f0-9cb1e9c212ef",
+              "name": "result",
+              "value": "rejected",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Something needs approval": {
+      "main": [
+        [
+          {
+            "node": "Ask the human to approve",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask the human to approve": {
+      "main": [
+        [
+          {
+            "node": "Wait for the human",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for the human": {
+      "main": [
+        [
+          {
+            "node": "Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved?": {
+      "main": [
+        [
+          {
+            "node": "Approved: continue here",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rejected: stop here",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "tags": []
+}

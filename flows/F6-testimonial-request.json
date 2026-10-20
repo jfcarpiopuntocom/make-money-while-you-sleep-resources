@@ -1,0 +1,201 @@
+{
+  "name": "F6 Testimonial Request",
+  "nodes": [
+    {
+      "id": "74b6b966-5c1c-5815-9275-88953b320a97",
+      "name": "Read me first",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        -300
+      ],
+      "parameters": {
+        "content": "F6 Testimonial Request\n\nWhat it does: every morning it reads your sales sheet. If a buyer bought 10 or more days ago and has not been asked yet, it sends a short friendly request and marks them as asked.\n\nConnect: Google Sheets (the same sheet F3 writes to; columns email, buyDate, testimonialAsked) and Gmail. Test with a fake row dated 10 days ago and your own email. Never invent or edit testimonials: use only what real buyers write.",
+        "height": 300,
+        "width": 620
+      }
+    },
+    {
+      "id": "271422cb-9ab1-5a89-90cf-4fd5d8430e0c",
+      "name": "Every morning at 8",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ba1a23b2-5b00-50bd-a639-665d93d37597",
+      "name": "Read the sales sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "{{YOUR_GOOGLE_SHEET_ID}}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "{{YOUR_SHEET_TAB_NAME}}"
+        }
+      }
+    },
+    {
+      "id": "dcfe6dff-87fa-5953-b72f-f54ecc047ca3",
+      "name": "Bought 10+ days ago and not asked?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "dbe7e2c0-6f88-55ed-8d46-f86152d597d7",
+              "leftValue": "={{ $now.diff(DateTime.fromISO($json.buyDate), 'days').days >= 10 && !$json.testimonialAsked }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f08b184a-c667-56a2-8402-bd335bbfb6c5",
+      "name": "Ask for feedback",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        -80
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.email }}",
+        "subject": "Quick question about your purchase",
+        "emailType": "text",
+        "message": "Hi,\n\nYou have had the product for a little while. Could you reply with two lines: what helped, and what you would change? I read every answer. If you are happy for me to quote you, say so and tell me how you would like your name shown.\n\nYOUR_NAME\n{{YOUR_BUSINESS_NAME}}",
+        "options": {}
+      }
+    },
+    {
+      "id": "dcd63505-dabc-57a9-ba91-047047015bec",
+      "name": "Mark as asked",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        960,
+        -80
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "{{YOUR_GOOGLE_SHEET_ID}}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "{{YOUR_SHEET_TAB_NAME}}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $json.email }}",
+            "testimonialAsked": "={{ $now.toISODate() }}"
+          },
+          "matchingColumns": [
+            "email"
+          ]
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Every morning at 8": {
+      "main": [
+        [
+          {
+            "node": "Read the sales sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read the sales sheet": {
+      "main": [
+        [
+          {
+            "node": "Bought 10+ days ago and not asked?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bought 10+ days ago and not asked?": {
+      "main": [
+        [
+          {
+            "node": "Ask for feedback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask for feedback": {
+      "main": [
+        [
+          {
+            "node": "Mark as asked",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "tags": []
+}

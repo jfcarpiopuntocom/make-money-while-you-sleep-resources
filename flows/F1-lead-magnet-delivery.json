@@ -1,0 +1,230 @@
+{
+  "name": "F1 Lead Magnet Delivery",
+  "nodes": [
+    {
+      "id": "bc0d4ab5-56d2-5783-85e3-11111505702e",
+      "name": "Read me first",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        -260
+      ],
+      "parameters": {
+        "content": "F1 Lead Magnet Delivery\n\nWhat it does: when someone fills in your form, this sends them your free booklet and writes them in your contact list.\n\nConnect: 1) Point your form to this Webhook's test URL. 2) In the Gmail and Google Sheets steps, pick your own Google account. 3) Replace {{YOUR_BOOKLET_LINK}} and {{YOUR_GOOGLE_SHEET_ID}}. Nothing is sent until you turn the workflow on. Test with your own email first.",
+        "height": 300,
+        "width": 520
+      }
+    },
+    {
+      "id": "3ad2ad67-fb47-58b2-a2bd-2f2a725fb7b6",
+      "name": "Form signup",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "path": "lead-magnet",
+        "httpMethod": "POST",
+        "responseMode": "onReceived"
+      },
+      "webhookId": "38a09c2b-73fe-55e6-8ae9-ac0daf3e10f1"
+    },
+    {
+      "id": "1951bed8-a9d5-5dfe-a063-f722a06c5def",
+      "name": "Clean the fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d8e30aef-1f26-5257-908b-0653467ac176",
+              "name": "email",
+              "value": "={{ ($json.body.email || '').toString().trim().toLowerCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "08425dc1-0531-51c7-9904-5a43eb830254",
+              "name": "firstName",
+              "value": "={{ $json.body.firstName || 'friend' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "d7898c8c-c03c-506d-a027-93b1906f4eb1",
+      "name": "Is there an email?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "b8bf9539-6cb2-528a-88c7-2e45f82fccb0",
+              "leftValue": "={{ $json.email }}",
+              "rightValue": "@",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "75fd5c82-338e-53ce-8ea4-c688a2238a07",
+      "name": "Send the booklet",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        720,
+        -80
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.email }}",
+        "subject": "Your free booklet is here",
+        "emailType": "text",
+        "message": "=Hi {{ $json.firstName }},\n\nThanks for asking for the booklet. Here it is:\n{{YOUR_BOOKLET_LINK}}\n\nIf the link does not work, just reply to this email.\n\nYOUR_NAME\n{{YOUR_BUSINESS_NAME}}",
+        "options": {}
+      }
+    },
+    {
+      "id": "f17bd404-396f-5f24-80c8-b9257b403a6e",
+      "name": "Save contact with tag",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        960,
+        -80
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "{{YOUR_GOOGLE_SHEET_ID}}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "{{YOUR_SHEET_TAB_NAME}}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $('Clean the fields').item.json.email }}",
+            "firstName": "={{ $('Clean the fields').item.json.firstName }}",
+            "tag": "reader",
+            "date": "={{ $now.toISODate() }}"
+          }
+        }
+      }
+    },
+    {
+      "id": "8ef78d4f-0856-55e1-9e92-8ee8fce7721f",
+      "name": "Skip: no valid email",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        100
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1905fd80-f4cc-5841-864b-a2d4435b2a96",
+              "name": "status",
+              "value": "skipped",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Form signup": {
+      "main": [
+        [
+          {
+            "node": "Clean the fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean the fields": {
+      "main": [
+        [
+          {
+            "node": "Is there an email?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is there an email?": {
+      "main": [
+        [
+          {
+            "node": "Send the booklet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Skip: no valid email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send the booklet": {
+      "main": [
+        [
+          {
+            "node": "Save contact with tag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "tags": []
+}

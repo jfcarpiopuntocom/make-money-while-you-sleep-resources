@@ -1,0 +1,28 @@
+{
+  "router_port": 20129,
+  "omniroute_url": "http://127.0.0.1:20128",
+  "omniroute_key_env": "",
+  "pool": [
+    "kobold/local",
+    "gemini/gemini-flash-latest",
+    "mistral/mistral-small-latest",
+    "openrouter/REPLACE-WITH-A-FREE-MODEL-ID:free"
+  ],
+  "providers": {
+    "example": {
+      "base_url": "https://api.example.com/v1",
+      "key_env": "EXAMPLE_API_KEY",
+      "models": ["example-model-id"]
+    }
+  },
+  "kobold_url": "",
+  "launcher": {
+    "omniroute_command": "omniroute",
+    "omniroute_data_dir": "",
+    "backups_keep": 7,
+    "kobold_exe": "",
+    "kobold_model": "",
+    "kobold_port": 5001,
+    "min_free_ram_gb": 4.5
+  }
+}

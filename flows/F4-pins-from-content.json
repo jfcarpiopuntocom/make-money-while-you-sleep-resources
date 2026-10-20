@@ -1,0 +1,231 @@
+{
+  "name": "F4 Pins from Content",
+  "nodes": [
+    {
+      "id": "9d7bc748-dfd8-5aa3-9ea0-50715a225ce5",
+      "name": "Read me first",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        -320
+      ],
+      "parameters": {
+        "content": "F4 Pins from Content\n\nWhat it does: when you finish a chapter or article, an AI drafts 5 pin texts and image ideas. You approve them by email. Only approved pins move to the scheduling step.\n\nConnect: 1) Webhook: call it with title and summary. 2) The AI request: your own AI service address; keep the key in n8n credentials, never in the flow. 3) Gmail. 4) The last step is a placeholder for your scheduler. Pinterest shows scheduled pins publicly only after it approves your app (see Appendix C).",
+        "height": 320,
+        "width": 640
+      }
+    },
+    {
+      "id": "07607022-784c-5afd-85f0-cdf91561be3f",
+      "name": "New article or chapter",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "path": "pins-from-content",
+        "httpMethod": "POST",
+        "responseMode": "onReceived"
+      },
+      "webhookId": "4f8b5438-9ca8-5d42-9180-d2ccd3924ae4"
+    },
+    {
+      "id": "44c1275c-1424-5090-bfad-1083563c53b3",
+      "name": "AI drafts 5 pins",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "{{YOUR_AI_API_URL}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ prompt: 'Write 5 Pinterest pin titles and descriptions plus one image idea each for: ' + $json.body.title + '. Summary: ' + $json.body.summary + '. Plain, friendly, no hype, no income promises.' }) }}",
+        "options": {}
+      }
+    },
+    {
+      "id": "7129a3e7-4bee-525a-8073-cbc7847639bd",
+      "name": "Ask the human to approve",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "{{YOUR_EMAIL}}",
+        "subject": "Approve these pins?",
+        "emailType": "text",
+        "message": "=Draft pins for {{ $('New article or chapter').item.json.body.title }}:\n\n{{ JSON.stringify($('AI drafts 5 pins').item.json) }}\n\nApprove: {{ $execution.resumeUrl }}?decision=yes\nReject: {{ $execution.resumeUrl }}?decision=no",
+        "options": {}
+      }
+    },
+    {
+      "id": "c8ad0f64-d933-596f-8db5-9b89139ba93b",
+      "name": "Wait for the human",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "resume": "webhook",
+        "httpMethod": "GET",
+        "options": {}
+      },
+      "webhookId": "0b8c513d-372e-5ad3-a9e7-3d2df5a4e218"
+    },
+    {
+      "id": "13360cb7-f5ca-590b-9a3a-b450c84d1163",
+      "name": "Approved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        960,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "a5a4c2bd-9f14-5c29-b19f-c64ce606dda3",
+              "leftValue": "={{ $json.query.decision }}",
+              "rightValue": "yes",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "bd5f9fc7-5f4f-5aaf-9bca-9c7a8426be80",
+      "name": "Send approved pins to scheduler",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1200,
+        -80
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "{{YOUR_SCHEDULER_URL}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($('AI drafts 5 pins').item.json) }}",
+        "options": {}
+      }
+    },
+    {
+      "id": "323d00bf-cbea-5a08-b91f-0703a40f1919",
+      "name": "Rejected: nothing scheduled",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1200,
+        100
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a857c066-5f53-5468-93a5-e3924aa10f29",
+              "name": "result",
+              "value": "rejected",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "New article or chapter": {
+      "main": [
+        [
+          {
+            "node": "AI drafts 5 pins",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI drafts 5 pins": {
+      "main": [
+        [
+          {
+            "node": "Ask the human to approve",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask the human to approve": {
+      "main": [
+        [
+          {
+            "node": "Wait for the human",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for the human": {
+      "main": [
+        [
+          {
+            "node": "Approved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approved?": {
+      "main": [
+        [
+          {
+            "node": "Send approved pins to scheduler",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Rejected: nothing scheduled",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "tags": []
+}

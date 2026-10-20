@@ -1,0 +1,220 @@
+{
+  "name": "F3 Sale to Delivery",
+  "nodes": [
+    {
+      "id": "618c9854-97a8-5341-ba56-e80d0c942aa0",
+      "name": "Read me first",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -200,
+        -260
+      ],
+      "parameters": {
+        "content": "F3 Sale to Delivery\n\nWhat it does: when your store (Gumroad or similar) reports a sale, this sends the files, writes the sale in your sheet and sends an onboarding email the next day.\n\nConnect: in your store's settings add this Webhook URL as the sale notification. Connect Gmail and Google Sheets. Replace {{YOUR_PRODUCT_LINK}}. Test with a real purchase of your own product.",
+        "height": 300,
+        "width": 520
+      }
+    },
+    {
+      "id": "96928565-8461-55aa-a224-c6b3889ff6dd",
+      "name": "Sale notification",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "path": "sale-delivery",
+        "httpMethod": "POST",
+        "responseMode": "onReceived"
+      },
+      "webhookId": "61556579-7359-5e1e-9c3b-2b467407c2b9"
+    },
+    {
+      "id": "edbbd511-61f0-5e8c-9389-c12abf78cd71",
+      "name": "Pick out the buyer",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "73b1a182-5871-51d6-8230-5ab3e27e3974",
+              "name": "email",
+              "value": "={{ $json.body.email }}",
+              "type": "string"
+            },
+            {
+              "id": "c09f3dd0-00a2-5f02-b778-33671fe01dc9",
+              "name": "product",
+              "value": "={{ $json.body.product_name || 'your product' }}",
+              "type": "string"
+            },
+            {
+              "id": "8c642c32-ccc0-5491-b5f1-a782c5e90e6e",
+              "name": "price",
+              "value": "={{ $json.body.price || '' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "4c4c129c-e4e2-57f3-a2d6-bd42f3257cbe",
+      "name": "Send the files",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $json.email }}",
+        "subject": "=Your purchase: {{ $json.product }}",
+        "emailType": "text",
+        "message": "Thank you for your purchase.\n\nHere is your download:\n{{YOUR_PRODUCT_LINK}}\n\nIf anything does not work, reply and I will fix it personally.\n\nYOUR_NAME\n{{YOUR_BUSINESS_NAME}}",
+        "options": {}
+      }
+    },
+    {
+      "id": "079262e8-e9cf-5e28-85eb-997f4f454cbd",
+      "name": "Log the sale",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "{{YOUR_GOOGLE_SHEET_ID}}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "{{YOUR_SHEET_TAB_NAME}}"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $('Pick out the buyer').item.json.email }}",
+            "product": "={{ $('Pick out the buyer').item.json.product }}",
+            "price": "={{ $('Pick out the buyer').item.json.price }}",
+            "buyDate": "={{ $now.toISODate() }}",
+            "testimonialAsked": ""
+          }
+        }
+      }
+    },
+    {
+      "id": "8022c823-35ad-5f9c-a2c2-3834f2aa946c",
+      "name": "Wait 1 day",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        960,
+        0
+      ],
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 1,
+        "unit": "days"
+      }
+    },
+    {
+      "id": "de4cc517-3dfb-56ff-88a6-06e6067ee8d6",
+      "name": "Onboarding email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1200,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "send",
+        "sendTo": "={{ $('Pick out the buyer').item.json.email }}",
+        "subject": "How to get the most from it",
+        "emailType": "text",
+        "message": "Hi,\n\nA quick tip to start: do the first exercise today, even if it takes only ten minutes. Reply and tell me how it went.\n\nYOUR_NAME\n{{YOUR_BUSINESS_NAME}}",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Sale notification": {
+      "main": [
+        [
+          {
+            "node": "Pick out the buyer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick out the buyer": {
+      "main": [
+        [
+          {
+            "node": "Send the files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send the files": {
+      "main": [
+        [
+          {
+            "node": "Log the sale",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log the sale": {
+      "main": [
+        [
+          {
+            "node": "Wait 1 day",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1 day": {
+      "main": [
+        [
+          {
+            "node": "Onboarding email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false,
+  "tags": []
+}
